@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carbonix — Aircraft Ground Emissions Neutralizer</title>
+  <meta name="description" content="Carbonix is a retrofit concept that targets aircraft ground-level emissions near airports." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* New scheme: clean “real site” light theme (easy to read, not AI-ish) */
+      --bg: #f7faf9;
+      --bg2: #eef5f1;
+      --text: #0f172a;
+      --muted: rgba(15,23,42,0.72);
+      --muted2: rgba(15,23,42,0.56);
+      --card: rgba(255,255,255,0.92);
+      --stroke: rgba(15,23,42,0.10);
+      --shadow: 0 14px 36px rgba(15,23,42,0.10);
+
+      /* Brand accents (change if you want) */
+      --green: #16a34a;
+      --teal: #0ea5a4;
+      --accent: linear-gradient(135deg, rgba(22,163,74,0.95), rgba(14,165,164,0.90));
+
+      --radius: 16px;
+      --radiusSm: 12px;
+      --max: 1120px;
+    }
+
+    *{ box-sizing:border-box }
+    html{ scroll-behavior:smooth }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(22,163,74,0.10), transparent 60%),
+        radial-gradient(900px 650px at 90% 15%, rgba(14,165,164,0.10), transparent 55%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 55%, var(--bg) 100%);
+      line-height:1.55;
+    }
+
+    a{ color:inherit; text-decoration:none }
+    img{ max-width:100%; display:block }
+
+    .wrap{ max-width:var(--max); margin:0 auto; padding:0 20px }
+    section{ padding:72px 0 }
+    @media (max-width: 920px){ section{ padding:56px 0 } }
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:50;
+      background: rgba(247,250,249,0.72);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--stroke);
+    }
+    .topbar{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; gap:14px }
+
+    .brand{ display:flex; align-items:center; gap:12px; min-width: 220px }
+    .logoBox{
+      width:40px; height:40px; border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+      display:grid; place-items:center;
+      overflow:hidden;
+    }
+    /* Real logo goes here later */
+    .logoBox img{ width:100%; height:100%; object-fit:contain; display:none }
+    .logoFallback{
+      width:100%; height:100%; display:grid; place-items:center;
+      font-weight:800; letter-spacing:-0.5px;
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .brandText b{ display:block; font-size:14px }
+    .brandText span{ display:block; font-size:12px; color: var(--muted2); margin-top:2px }
+
+    nav{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:flex-end }
+    nav a{
+      font-size:13px;
+      color: var(--muted);
+      padding:8px 10px;
+      border-radius: 10px;
+    }
+    nav a:hover{ background: rgba(15,23,42,0.06); color: var(--text) }
+
+    .menuBtn{
+      display:none;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.8);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    @media (max-width: 920px){
+      nav{ display:none }
+      .menuBtn{ display:inline-flex }
+    }
+
+    .mobileNav{ display:none; padding: 0 0 14px 0 }
+    .mobileNav a{
+      display:block;
+      padding:10px 12px;
+      border-radius: 12px;
+      color: var(--muted);
+    }
+    .mobileNav a:hover{ background: rgba(15,23,42,0.06); color: var(--text) }
+
+    /* Typography */
+    h1{ margin: 16px 0 10px; font-size: 44px; line-height:1.06; letter-spacing:-1.1px }
+    h2{ margin: 0 0 10px; font-size: 28px; letter-spacing:-0.6px }
+    h3{ margin: 0 0 6px; font-size: 16px }
+    p{ margin: 0; color: var(--muted); font-size: 14.5px }
+    .lead{ font-size: 16px; color: var(--muted); max-width: 70ch }
+
+    @media (max-width: 920px){ h1{ font-size: 34px } }
+
+    /* Layout helpers */
+    .grid{ display:grid; gap:18px }
+    .two{ grid-template-columns: 1.1fr 0.9fr }
+    .three{ grid-template-columns: repeat(3, 1fr) }
+    .four{ grid-template-columns: repeat(4, 1fr) }
+    @media (max-width: 920px){ .two,.three,.four{ grid-template-columns: 1fr } }
+
+    /* Components */
+    .pill{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.65);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .dot{
+      width:8px; height:8px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(22,163,74,0.14);
+    }
+
+    .card{
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .btnRow{ display:flex; gap:12px; flex-wrap:wrap; margin-top:16px }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.85);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 14px;
+      cursor:pointer;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+    }
+    .btn:hover{ background: #ffffff }
+    .btnPrimary{
+      border-color: rgba(22,163,74,0.26);
+      background: linear-gradient(135deg, rgba(22,163,74,0.12), rgba(14,165,164,0.12));
+    }
+
+    .tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px }
+    .tag{
+      font-size:12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.75);
+      color: var(--muted);
+    }
+
+    .imgPH{
+      border: 1px dashed rgba(15,23,42,0.22);
+      background: rgba(255,255,255,0.55);
+      border-radius: var(--radius);
+      padding: 16px;
+      color: var(--muted);
+    }
+    .imgPH b{ color: var(--text) }
+    .imgPH small{ display:block; margin-top:6px; color: var(--muted2) }
+
+    .heroMedia{
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.70);
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+    }
+    .heroMedia .ph{
+      aspect-ratio: 16/10;
+      display:flex; align-items:center; justify-content:center;
+      padding: 16px;
+      text-align:center;
+      color: var(--muted);
+      background:
+        radial-gradient(900px 450px at 20% 20%, rgba(22,163,74,0.12), transparent 60%),
+        radial-gradient(900px 450px at 80% 20%, rgba(14,165,164,0.12), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.40));
+    }
+    .heroMedia .meta{
+      display:flex; gap:16px; flex-wrap:wrap;
+      padding: 14px 16px;
+      border-top: 1px solid var(--stroke);
+    }
+    .kpi{ min-width: 170px }
+    .kpi b{ display:block; font-size: 13px }
+    .kpi span{ display:block; font-size: 12px; color: var(--muted2); margin-top: 3px }
+
+    ul.clean{ margin: 10px 0 0; padding-left: 18px; color: var(--muted) }
+    ul.clean li{ margin: 8px 0; font-size: 14px }
+
+    details{
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.75);
+      border-radius: var(--radiusSm);
+      padding: 14px;
+    }
+    summary{ cursor:pointer; font-weight:700; font-size:14px }
+    details p{ margin-top: 10px }
+
+    footer{
+      border-top: 1px solid var(--stroke);
+      padding: 26px 0;
+      color: var(--muted2);
+      font-size: 12px;
+      background: rgba(255,255,255,0.55);
+    }
+    .footRow{ display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap }
+    .footRow a{ color: var(--muted) }
+    .footRow a:hover{ color: var(--text) }
+
+    /* small highlight blocks */
+    .callout{
+      border-left: 4px solid rgba(22,163,74,0.55);
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.70);
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      color: var(--muted);
+    }
+  
+
+    /* Image figures */
+    figure.fig{ margin:0; }
+    .figBox{
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.70);
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+    }
+    .figBox img{ width:100%; height:auto; display:block; }
+    .figCap{
+      padding: 12px 14px;
+      border-top: 1px solid var(--stroke);
+      color: var(--muted2);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+    .figCap b{ color: var(--text); }
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="#top" aria-label="Carbonix home">
+        <!-- LOGO PLACEHOLDER: when you send your logo, I will replace this with <img src="..."> -->
+        <div class="logoBox" title="Logo placeholder">
+          <img id="logoImg" src="images/carbonix-logo-light.png" alt="Carbonix logo" style="display:block;" />
+          <div class="logoFallback" id="logoFallback" style="display:none;">C</div>
+        </div>
+        <div class="brandText">
+          <b>Carbonix</b>
+          <span>Aircraft ground emissions neutralizer (concept)</span>
+        </div>
+      </a>
+
+      <nav aria-label="primary">
+        <a href="#innovation">Innovation</a>
+        <a href="#problem">Problem</a>
+        <a href="#how">How it works</a>
+        <a href="#gallery">Images</a>
+        <a href="#validation">Validation</a>
+        <a href="#impact">Impact</a>
+        <a href="#team">Team</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <button class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="mobileNav">Menu</button>
+    </div>
+
+    <div class="mobileNav" id="mobileNav">
+      <a href="#innovation">Innovation</a>
+      <a href="#problem">Problem</a>
+      <a href="#how">How it works</a>
+      <a href="#gallery">Images</a>
+      <a href="#validation">Validation</a>
+      <a href="#impact">Impact</a>
+      <a href="#team">Team</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="top">
+  <div class="wrap grid two" style="align-items:stretch;">
+    <div>
+      <div class="pill"><span class="dot"></span> Conrad Challenge — Innovation Stage</div>
+      <h1>Cleaner air at the gate.<br/>A practical retrofit concept for aircraft ground emissions.</h1>
+      <p class="lead"> Carbonix is a compact modular concept that targets harmful exhaust toxins during taxi/idle near terminals using catalytic conversion and low-restriction flow design.</p>
+
+      <div class="btnRow">
+        <a class="btn btnPrimary" href="#innovation">Explore the innovation</a>
+        <a class="btn" href="#gallery">See system images</a>
+      </div>
+
+      <div class="tags">
+        <span class="tag">Retrofit</span>
+        <span class="tag">Catalysis</span>
+        <span class="tag">Airport air quality</span>
+        <span class="tag">Engineering + sustainability</span>
+      </div>
+
+      <div class="callout" style="margin-top:16px; max-width:78ch;">
+        Conceptual
+      </div>
+    </div>
+
+    <div class="heroMedia">
+      <img src="images/hero-cad.png" alt="Carbonix CAD render" style="width:100%; height:auto; display:block;" />
+      <div class="meta">
+        <div class="kpi"><b>What it is</b><span>Compact module concept in exhaust path</span></div>
+        <div class="kpi"><b>What it targets</b><span>Ground-level exposure zones near gates</span></div>
+        <div class="kpi"><b>Status</b><span>CAD + planned tests / validation</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INNOVATION -->
+<section id="innovation">
+  <div class="wrap">
+    <h2>The Innovation</h2>
+
+    <div class="grid two" style="margin-top:18px;">
+      <div class="card">
+        <h3>What Carbonix is</h3>
+        <p>Carbonix is a modular emissions-neutralization concept designed to be installed in an aircraft's APU (Auxilary Power Unit) exhaust flow path during ground operations. It is designed around (1) catalytic conversion, (2) uniform flow distribution, and (3) pressure-loss awareness.</p>
+        <ul class="clean">
+          <li><b>Target users:</b> airports, airlines, ground operations teams</li>
+          <li><b>When it matters most:</b> taxi, idle, and gate time</li>
+          <li><b>Constraint we’re solving:</b> reduce harmful emissions without major aircraft redesign</li>
+        </ul>
+      </div>
+
+      <figure class="fig figBox">
+        <!-- REQUIRED IMAGES (put these files in /images):
+          1) model-labeled.png  (your labeled system render)
+        -->
+        <img src="images/model-labeled.png" alt="Carbonix system labeled render" />
+        <figcaption class="figCap"><b>System overview (labeled):</b> Inlet → temperature regulation/transfer section → catalytic chamber → outlet.</figcaption>
+      </figure>
+    </div>
+
+    <div class="grid three" style="margin-top:18px;">
+      <div class="card"><h3>Problem</h3><p>Aircraft ground operations create concentrated emissions close to people (workers + nearby communities, putting them at risk).</p></div>
+      <div class="card"><h3>Solution</h3><p>A compact catalytic module concept that aims to convert harmful exhaust components into less harmful outputs under ground conditions.</p></div>
+      <div class="card"><h3>What’s different</h3><p>Designed as a retrofit-first package with flow distribution + low restriction as core constraints, rather than simply chemistry claims.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="wrap">
+    <h2>The Problem</h2>
+    <div class="grid two" style="margin-top:18px;">
+      <div class="card">
+        <h3>Why ground emissions matter</h3>
+        <p>Emissions near terminals and taxiways matter because they happen at ground level, close to airport workers and surrounding communities. Small per-aircraft improvements can scale significantly across a busy airport.</p>
+        <ul class="clean">
+          <li><b>Where exposure happens:</b> gates, ramps, taxiways</li>
+          <li><b>Who is exposed:</b> ground crews, passengers, nearby neighborhoods</li>
+          <li><b>Why it’s hard:</b> real-world constraints (space, heat, pressure loss, maintenance)</li>
+        </ul>
+      </div>
+      <div class="imgPH">
+        <b>IMAGE PLACEHOLDER — Context photo</b>
+        <small>Example: aircraft at gate, ground crew, or airport environment (copyright-safe photo you own or have rights to).</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <h2>How it Works</h2>
+
+    <div class="grid two" style="margin-top:18px;">
+      <div class="card">
+        <h3>Technical overview</h3>
+        <ul class="clean">
+          <li><b>1) Inlet + conditioning:</b> exhaust enters and is guided for even distribution and liquid cooling.</li>
+          <li><b>2) Catalyst core:</b> catalyst leads to the conversion reactions for target gases.</li>
+          <li><b>3) Outlet + verification:</b> exhaust exits; sensors/testing verify performance (planned).</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Flow distribution</span>
+          <span class="tag">Pressure drop</span>
+          <span class="tag">Thermal constraints</span>
+          <span class="tag">Maintainability</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Plain-English explanation</h3>
+        <p>Think of Carbonix as a “filtration system,” except rather then trapping gases, it uses a catalyst to help transform harmful components into less harmful outputs while trying not to choke the exhaust flow.</p>
+        <ul class="clean">
+          <li><b>Install:</b> retrofit module concept</li>
+          <li><b>Run:</b> passive during ground operations</li>
+          <li><b>Maintain:</b> replace/inspect core on a schedule</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid three" style="margin-top:18px;">
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Diagram: flow path</b><small>Simple arrows + labels.</small></div>
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Diagram: catalyst core (cross-section)</b><small>Show internals + labels.</small></div>
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Diagram: mounting concept</b><small>Where it attaches + constraints.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- IMAGE GALLERY -->
+<section id="gallery">
+  <div class="wrap">
+    <h2>System Images</h2>
+    <p class="lead">These are the current CAD renders used to explain the system. More angles, internals, and test visuals will be added as we validate performance.</p>
+
+    <div class="grid three" style="margin-top:18px;">
+      <figure class="fig figBox">
+        <!-- REQUIRED IMAGES (put these files in /images):
+          2) model-front.png     (your full labeled side view)
+        -->
+        <img src="images/model-front.png" alt="Carbonix labeled side view" />
+        <figcaption class="figCap"><b>Labeled side view:</b> communicates the major modules and flow direction.</figcaption>
+      </figure>
+
+      <figure class="fig figBox">
+        <!-- REQUIRED IMAGES (put these files in /images):
+          3) model-top-large.png (your large top view / circular face)
+        -->
+        <img src="images/model-top-large.png" alt="Carbonix top view (large)" />
+        <figcaption class="figCap"><b>Top view (large):</b> shows face geometry and housing footprint.</figcaption>
+      </figure>
+
+      <figure class="fig figBox">
+        <!-- REQUIRED IMAGES (put these files in /images):
+          4) model-top.png       (your smaller top view / square frame)
+        -->
+        <img src="images/model-top.png" alt="Carbonix top view (frame)" />
+        <figcaption class="figCap"><b>Top view (frame):</b> shows external frame and inlet/outlet alignment reference.</figcaption>
+      </figure>
+    </div>
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Labeled render #2 (rear/top)</b><small>Second angle to show different parts.</small></div>
+    </div>
+
+    <div class="grid four" style="margin-top:18px;">
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Close-up: inlet</b><small>Optional</small></div>
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Close-up: catalyst core</b><small>Optional</small></div>
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Close-up: mounting</b><small>Optional</small></div>
+      <div class="imgPH"><b>IMAGE PLACEHOLDER — Exploded view</b><small>Optional</small></div>
+    </div>
+
+    <div class="imgPH" style="margin-top:18px;">
+      <b>IMAGE PLACEHOLDER — Short video / GIF preview (optional)</b>
+      <small>If you later export a rotating CAD turntable, place it here.</small>
+    </div>
+  </div>
+</section>
+
+<!-- VALIDATION / PROGRESS -->
+<section id="validation">
+  <div class="wrap">
+    <h2>Progress & Validation</h2>
+    
+    <div class="grid two" style="margin-top:18px;">
+      <div class="card">
+        <h3>What we have now</h3>
+        <ul class="clean">
+          <li>CAD model + system architecture</li>
+          <li>Materials/catalyst shortlist (research)</li>
+          <li>Constraints defined (heat, space, pressure loss, maintenance)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Next validation steps</h3>
+        <ul class="clean">
+          <li>Bench testing for pressure drop vs. flow</li>
+          <li>Small-scale catalyst conversion testing in controlled setup with physical prototype</li>
+          <li>Iterate system geometry for uniform distribution</li>
+          <li>Maintenance + durability tests</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid three" style="margin-top:18px;">
+      <div class="card"><h3>Big risks</h3><p>Pressure loss, temperature compatibility, catalyst degradation, integration constraints.</p></div>
+      <div class="card"><h3>Mitigations</h3><p>Low-restriction design, modular replacement, staged testing, conservative claims.</p></div>
+      <div class="card"><h3>Milestones</h3><p>Prototype → bench test → iterate</p></div>
+    </div>
+
+    <div class="imgPH" style="margin-top:18px;">
+      <b>IMAGE PLACEHOLDER — Test setup photo / chart (later)</b>
+      <small>When you have data, this becomes a credibility anchor.</small>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section id="impact">
+  <div class="wrap">
+    <h2>Intended Impact</h2>
+  
+
+    <div class="grid three" style="margin-top:18px;">
+      <div class="card"><h3>Who it helps</h3><p>Ground crews, passengers, and nearby communities exposed to airport emissions.</p></div>
+      <div class="card"><h3>Why it matters</h3><p>Ground-level emissions occur where people are most exposed; mitigation here can be high leverage.</p></div>
+      <div class="card"><h3>Why adopt</h3><p>Retrofit concept could offer measurable improvement without waiting for full fleet redesign.</p></div>
+    </div>
+
+    <div class="grid two" style="margin-top:18px;">
+      <div class="card">
+        <h3>Impact statement</h3>
+        <p><b>Carbonix aims to</b> reduce harmful aircraft ground emissions by enabling catalytic conversion in a compact, low-restriction retrofit concept, improving air quality around airports.</p>
+      </div>
+      <div class="card">
+        <h3>What success looks like</h3>
+        <ul class="clean">
+          <li>Clear testing plan + initial validation results</li>
+          <li>Demonstrated low restriction / feasible packaging</li>
+          <li>Stakeholder-fit story (airline/airport/regulator)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STAKEHOLDERS / MARKET FIT -->
+<section id="stakeholders">
+  <div class="wrap">
+    <h2>Stakeholders & Adoption</h2>
+  
+
+    <div class="grid three" style="margin-top:18px;">
+      <div class="card"><h3>Airports</h3><p>Care about local air quality, regulations, public perception, worker safety.</p></div>
+      <div class="card"><h3>Airlines</h3><p>Care about cost, maintenance cycles, reliability, and operational disruption.</p></div>
+      <div class="card"><h3>Regulators / community</h3><p>Care about measurable impact and verified performance claims.</p></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h3>Adoption concept (edit this)</h3>
+      <p>Pilot program with one airport/partner → limited deployment → iterate based on maintenance + performance results → scale with manufacturing plan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFERENTIATORS -->
+<section id="differentiators">
+  <div class="wrap">
+    <h2>What Makes Carbonix Different</h2>
+
+
+    <div class="grid three" style="margin-top:18px;">
+      <div class="card"><h3>1) Retrofit-first packaging</h3><p>Designed around space/heat constraints instead of a lab-only catalyst idea.</p></div>
+      <div class="card"><h3>2) Flow distribution focus</h3><p>Geometry aims to avoid channeling so the catalyst is actually used effectively.</p></div>
+      <div class="card"><h3>3) Pressure-loss awareness</h3><p>Designed to minimize restriction so it’s more feasible for real operations.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="wrap">
+    <h2>Roadmap</h2>
+ 
+
+    <div class="grid three" style="margin-top:18px;">
+      <div class="card"><h3>Phase 1</h3><p>Finalize CAD, define constraints, build small test plan.</p></div>
+      <div class="card"><h3>Phase 2</h3><p>Bench tests: pressure drop + conversion in controlled environment.</p></div>
+      <div class="card"><h3>Phase 3</h3><p>Iterate design, durability assumptions, and pilot partnership plan.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="wrap">
+    <h2>Meet the Team</h2>
+    
+    <div class="grid two" style="margin-top:18px;">
+      <div class="card">
+        <h3>Team Member Name</h3>
+        <p><b>Role:</b> Mechanical Design / CAD / Testing (edit)</p>
+        <p style="margin-top:10px;">Short bio: what you did, what you’re learning, what you care about.</p>
+        <div class="imgPH" style="margin-top:12px;"><b>IMAGE PLACEHOLDER — Headshot</b><small>Square crop recommended.</small></div>
+      </div>
+      <div class="card">
+        <h3>Team Member Name</h3>
+        <p><b>Role:</b> Research / Business / Outreach (edit)</p>
+        <p style="margin-top:10px;">Short bio: what you did, what you’re learning, what you care about.</p>
+        <div class="imgPH" style="margin-top:12px;"><b>IMAGE PLACEHOLDER — Headshot</b><small>Square crop recommended.</small></div>
+      </div>
+    </div>
+
+    <div class="imgPH" style="margin-top:18px;">
+      <b>IMAGE PLACEHOLDER — Team group photo</b>
+      <small>Optional but helps credibility.</small>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+
+    <div class="grid" style="margin-top:18px;">
+      <details>
+        <summary>Is Carbonix a prototype or a concept?</summary>
+        <p>Currently, Carbonix is a concept.</p>
+      </details>
+      <details>
+        <summary>What emissions does Carbonix target?</summary>
+        <p>The catalyst in Carbonix, anticipated to be Platinum, Palladium, and Rhodium, will target CO (Carbon Monoxide) and NOx (Nitric Oxide), which are harmful toxins. </p>
+      </details>
+      <details>
+        <summary>What are the biggest engineering challenges?</summary>
+        <p>Pressure loss, heat, durability, maintenance cycle, and integration constraints.</p>
+      </details>
+      <details>
+        <summary>How will you prove it works?</summary>
+        <p>Bench tests + controlled conversion measurements + iterative design changes.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <h2>Contact</h2>
+    <p class="lead">Use a school-safe contact method (team email or advisor email).</p>
+
+    <div class="grid two" style="margin-top:18px;">
+      <div class="card">
+        <h3>Contact info</h3>
+        <ul class="clean">
+          <li><b>Email:</b> yourteam@email.com</li>
+          <li><b>Location:</b> City, State</li>
+          <li><b>Competition:</b> Conrad Challenge — Innovation Stage</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Partnerships welcome</span>
+          <span class="tag">Mentors welcome</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Quick message (optional)</h3>
+        <p>Not a real form yet. When you’re ready, connect it to a Google Form or Formspree.</p>
+        <div style="display:grid; gap:10px; margin-top:12px;">
+          <input placeholder="Your name" style="padding:12px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,0.9); color:var(--text);" />
+          <input placeholder="Email" style="padding:12px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,0.9); color:var(--text);" />
+          <textarea placeholder="Message" rows="4" style="padding:12px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,0.9); color:var(--text); resize:vertical;"></textarea>
+          <button class="btn btnPrimary" type="button" onclick="alert('Hook this up later (Google Form / Formspree).')">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footRow">
+      <div>© <span id="year"></span> Carbonix • Built for Conrad Challenge</div>
+      <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <a href="#innovation">Innovation</a>
+        <a href="#validation">Validation</a>
+        <a href="#team">Team</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu toggle
+  const btn = document.getElementById('menuBtn');
+  const mobile = document.getElementById('mobileNav');
+  btn?.addEventListener('click', () => {
+    const open = mobile.style.display === 'block';
+    mobile.style.display = open ? 'none' : 'block';
+    btn.setAttribute('aria-expanded', String(!open));
+  });
+  mobile?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      mobile.style.display = 'none';
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Footer year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Logo placeholder behavior: when you provide a logo file later, set logoImg.src and show it.
+  // Example (later): document.getElementById('logoImg').src = 'images/logo.png';
+  // Then: logoImg.style.display='block'; logoFallback.style.display='none';
+</script>
+
+</body>
+</html>
